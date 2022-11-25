@@ -25,10 +25,13 @@ let insert_result = (req, res) => {
     const unit = req.body.unit;
     const date = req.body.date;
     const time = req.body.time;
+    let state = "caution";
 
-    console.log(ai_result, accuracy, decibel, building, unit, date, time);
+    if(decibel > 60) {
+        state = "warning"
+    }
 
-  connection.query(`INSERT INTO measurement_result VALUES (null, ?, ?, ?, ?, ?, ?, ?)`, [data_list[ai_result], accuracy, decibel, building, unit, date, time], (error, result) => {
+  connection.query(`INSERT INTO measurement_result VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?)`, [data_list[ai_result], accuracy, decibel, building, unit, date, state, time], (error, result) => {
         if (error) throw error;
         res.send((result))
         console.log("[POST] 알림: measurement_result 에 데이터를 등록하였습니다.");
@@ -55,7 +58,7 @@ let get_unit_list = (req, res) => {
 
 let get_unit = (req, res) => {
     const unit = req.params.unit;
-    connection.query(`SELECT * from measurement_result where unit = ? `, [unit], (error, result) => {
+    connection.query(`SELECT * from measurement_result where unit = ? order by id desc`, [unit], (error, result) => {
         if (error) throw error;
         res.send((result))
         console.log(result);
@@ -63,9 +66,87 @@ let get_unit = (req, res) => {
     });
 }
 
+let get_building_information = (req, res) => {
+    connection.query(`SELECT * from building_information`, (error, result) => {
+        if (error) throw error;
+        res.send((result))
+        console.log(result);
+        console.log("[GET] 알림: get_building_information 메소드가 실행되었습니다.");
+    });
+}
+
+let get_caution_list = (req, res) => {
+    connection.query(`SELECT * from measurement_result where state = 'caution' order by id  desc`, (error, result) => {
+        if (error) throw error;
+        res.send((result))
+        console.log(result);
+        console.log("[GET] 알림: get_caution_list 메소드가 실행되었습니다.");
+    });
+}
+
+let get_warning_list = (req, res) => {
+    connection.query(`SELECT * from measurement_result where state = 'warning' order by id  desc`, (error, result) => {
+        if (error) throw error;
+        res.send((result))
+        console.log(result);
+        console.log("[GET] 알림: get_warning_list 메소드가 실행되었습니다.");
+    });
+}
+
+let get_unit_caution = (req, res) => {
+    const building = req.params.building;
+    const unit = req.params.unit;
+    connection.query(`SELECT * from measurement_result where state = 'caution' and building = ? and unit = ?`, [building, unit], (error, result) => {
+        if (error) throw error;
+        res.send((result))
+        console.log(result);
+        console.log("[GET] 알림: get_warning_list 메소드가 실행되었습니다.");
+    });
+}
+
+let get_unit_warning = (req, res) => {
+    const building = req.params.building;
+    const unit = req.params.unit;
+    connection.query(`SELECT * from measurement_result where state = 'warning' and building = ? and unit = ?`, [building, unit], (error, result) => {
+        if (error) throw error;
+        res.send((result))
+        console.log(result);
+        console.log("[GET] 알림: get_warning_list 메소드가 실행되었습니다.");
+    });
+}
+
+let get_unit_avg_db = (req, res) => {
+    const building = req.params.building;
+    const unit = req.params.unit;
+    connection.query(`SELECT decibel from measurement_result where state = 'warning' and building = ? and unit = ?`, [building, unit], (error, result) => {
+        if (error) throw error;
+        res.send((result))
+        console.log(result);
+        console.log("[GET] 알림: get_unit_avg_db 메소드가 실행되었습니다.");
+    });
+}
+
+let get_avg_db = (req, res) => {
+    connection.query(`SELECT decibel from measurement_result`, (error, result) => {
+        if (error) throw error;
+        res.send((result))
+        console.log(result);
+        console.log("[GET] 알림: get_avg_db 메소드가 실행되었습니다.");
+    });
+}
+
 module.exports = {
     insert_result: insert_result,
     get_building_list: get_building_list,
     get_unit_list: get_unit_list,
-    get_unit: get_unit
+    get_unit: get_unit,
+    get_building_information: get_building_information,
+    get_caution_list: get_caution_list,
+    get_warning_list: get_warning_list,
+    get_unit_caution: get_unit_caution,
+    get_unit_warning: get_unit_warning,
+    get_unit_avg_db: get_unit_avg_db,
+    get_avg_db: get_avg_db
+
+
 };
