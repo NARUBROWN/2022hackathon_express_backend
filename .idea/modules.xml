@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/2022hackathon_express_backend.iml" filepath="$PROJECT_DIR$/.idea/2022hackathon_express_backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../2022hackathon_veu_frontend/.idea/2022hackathon_veu_frontend.iml" filepath="$PROJECT_DIR$/../2022hackathon_veu_frontend/.idea/2022hackathon_veu_frontend.iml" />
     </modules>
   </component>
 </project>
